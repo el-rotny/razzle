@@ -8,7 +8,7 @@ var preset = {
   plugins: [
     // class { handleThing = () => { } }
     require.resolve('@babel/plugin-proposal-class-properties'),
-
+    [require('@babel/plugin-proposal-decorators'), { legacy: true }],
     // The following two plugins use Object.assign directly, instead of Babel's
     // extends helper. Note that this assumes `Object.assign` is available.
     // { ...todo, completed: true }

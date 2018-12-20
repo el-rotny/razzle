@@ -183,6 +183,31 @@ module.exports = (
             emitFile: true,
           },
         },
+        // Process any JS outside of the app with Babel.
+        // Unlike the application JS, we only compile the standard ES features.
+        {
+          test: /\.(js|mjs)$/,
+          exclude: /@babel(?:\/|\\{1,2})runtime/,
+          loader: require.resolve('babel-loader'),
+          options: {
+            babelrc: false,
+            configFile: false,
+            compact: false,
+            presets: [
+              [
+                require.resolve('babel-preset-react-app/dependencies'),
+                { helpers: true },
+              ],
+            ],
+            cacheDirectory: true,
+            // @remove-on-eject-end
+            // If an error happens in a package, it's possible to be
+            // because it was compiled. Thus, we don't want the browser
+            // debugger to show the original code. Instead, the code
+            // being evaluated would be much more helpful.
+            sourceMaps: false,
+          },
+        },
         // "url" loader works like "file" loader except that it embeds assets
         // smaller than specified limit in bytes as data URLs to avoid requests.
         // A missing `test` is equivalent to a match.
