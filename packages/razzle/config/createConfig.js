@@ -134,34 +134,34 @@ module.exports = (
       rules: [
         // Disable require.ensure as it's not a standard language feature.
         // { parser: { requireEnsure: false } },
-        {
-          test: /\.(js|jsx|mjs)$/,
-          enforce: 'pre',
-          use: [
-            {
-              options: mainEslintOptions,
-              loader: require.resolve('eslint-loader'),
-            },
-          ],
-          include: paths.appSrc,
-        },
-        // Avoid "require is not defined" errors
-        {
-          test: /\.mjs$/,
-          include: /node_modules/,
-          type: 'javascript/auto',
-        },
-        // Transform ES6 with Babel
-        {
-          test: /\.(js|jsx|mjs)$/,
-          include: [paths.appSrc],
-          use: [
-            {
-              loader: require.resolve('babel-loader'),
-              options: babelOptions,
-            },
-          ],
-        },
+        // {
+        //   test: /\.(js|jsx|mjs)$/,
+        //   enforce: 'pre',
+        //   use: [
+        //     {
+        //       options: mainEslintOptions,
+        //       loader: require.resolve('eslint-loader'),
+        //     },
+        //   ],
+        //   include: paths.appSrc,
+        // },
+        // // Avoid "require is not defined" errors
+        // {
+        //   test: /\.mjs$/,
+        //   include: /node_modules/,
+        //   type: 'javascript/auto',
+        // },
+        // // Transform ES6 with Babel
+        // {
+        //   test: /\.(js|jsx|mjs)$/,
+        //   include: [paths.appSrc],
+        //   use: [
+        //     {
+        //       loader: require.resolve('babel-loader'),
+        //       options: babelOptions,
+        //     },
+        //   ],
+        // },
         {
           exclude: [
             /\.html$/,
