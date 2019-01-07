@@ -55,10 +55,10 @@ module.exports = (
   };
 
   const hasEslintRc = fs.existsSync(paths.appEslintRc);
+  const hasEslintRcJs = fs.existsSync(paths.appEslintJs);
   const mainEslintOptions = {
     formatter: eslintFormatter,
     eslintPath: require.resolve('eslint'),
-
     ignore: false,
     useEslintrc: true,
   };
@@ -76,7 +76,7 @@ module.exports = (
     console.log('Using .babelrc defined in your app root');
   }
 
-  if (hasEslintRc) {
+  if (hasEslintRc || hasEslintRcJs) {
     console.log('Using .eslintrc defined in your app root');
   } else {
     mainEslintOptions.baseConfig = {
@@ -182,6 +182,15 @@ module.exports = (
             name: 'static/media/[name].[hash:8].[ext]',
             emitFile: true,
           },
+        },
+        // Process any JS outside of the app with Babel.
+        // Unlike the application JS, we only compile the standard ES features.
+        {
+          test: /\.(js|mjs)$/,
+          include: [paths.ownNodeModules],
+          exclude: /@babel(?:\/|\\{1,2})runtime/,
+          loader: require.resolve('babel-loader'),
+          options: babelOptions,
         },
         // "url" loader works like "file" loader except that it embeds assets
         // smaller than specified limit in bytes as data URLs to avoid requests.
