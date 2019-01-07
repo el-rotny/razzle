@@ -55,10 +55,10 @@ module.exports = (
   };
 
   const hasEslintRc = fs.existsSync(paths.appEslintRc);
+  const hasEslintRcJs = fs.existsSync(paths.appEslintJs);
   const mainEslintOptions = {
     formatter: eslintFormatter,
     eslintPath: require.resolve('eslint'),
-
     ignore: false,
     useEslintrc: true,
   };
@@ -76,7 +76,7 @@ module.exports = (
     console.log('Using .babelrc defined in your app root');
   }
 
-  if (hasEslintRc) {
+  if (hasEslintRc || hasEslintRcJs) {
     console.log('Using .eslintrc defined in your app root');
   } else {
     mainEslintOptions.baseConfig = {
@@ -134,34 +134,34 @@ module.exports = (
       rules: [
         // Disable require.ensure as it's not a standard language feature.
         // { parser: { requireEnsure: false } },
-        // {
-        //   test: /\.(js|jsx|mjs)$/,
-        //   enforce: 'pre',
-        //   use: [
-        //     {
-        //       options: mainEslintOptions,
-        //       loader: require.resolve('eslint-loader'),
-        //     },
-        //   ],
-        //   include: paths.appSrc,
-        // },
-        // // Avoid "require is not defined" errors
-        // {
-        //   test: /\.mjs$/,
-        //   include: /node_modules/,
-        //   type: 'javascript/auto',
-        // },
-        // // Transform ES6 with Babel
-        // {
-        //   test: /\.(js|jsx|mjs)$/,
-        //   include: [paths.appSrc],
-        //   use: [
-        //     {
-        //       loader: require.resolve('babel-loader'),
-        //       options: babelOptions,
-        //     },
-        //   ],
-        // },
+        {
+          test: /\.(js|jsx|mjs)$/,
+          enforce: 'pre',
+          use: [
+            {
+              options: mainEslintOptions,
+              loader: require.resolve('eslint-loader'),
+            },
+          ],
+          include: paths.appSrc,
+        },
+        // Avoid "require is not defined" errors
+        {
+          test: /\.mjs$/,
+          include: /node_modules/,
+          type: 'javascript/auto',
+        },
+        // Transform ES6 with Babel
+        {
+          test: /\.(js|jsx|mjs)$/,
+          include: [paths.appSrc],
+          use: [
+            {
+              loader: require.resolve('babel-loader'),
+              options: babelOptions,
+            },
+          ],
+        },
         {
           exclude: [
             /\.html$/,
@@ -187,26 +187,10 @@ module.exports = (
         // Unlike the application JS, we only compile the standard ES features.
         {
           test: /\.(js|mjs)$/,
+          include: [paths.ownNodeModules],
           exclude: /@babel(?:\/|\\{1,2})runtime/,
           loader: require.resolve('babel-loader'),
-          options: {
-            babelrc: false,
-            configFile: false,
-            compact: false,
-            presets: [
-              [
-                require.resolve('babel-preset-react-app/dependencies'),
-                { helpers: true },
-              ],
-            ],
-            cacheDirectory: true,
-            // @remove-on-eject-end
-            // If an error happens in a package, it's possible to be
-            // because it was compiled. Thus, we don't want the browser
-            // debugger to show the original code. Instead, the code
-            // being evaluated would be much more helpful.
-            sourceMaps: false,
-          },
+          options: babelOptions,
         },
         // "url" loader works like "file" loader except that it embeds assets
         // smaller than specified limit in bytes as data URLs to avoid requests.

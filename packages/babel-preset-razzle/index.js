@@ -1,14 +1,24 @@
 'use strict';
-
+var env = process.env.BABEL_ENV || process.env.NODE_ENV;
 var preset = {
   presets: [
-    [require.resolve('@babel/preset-env'), { modules: false }],
-    require.resolve('@babel/preset-react'),
+    [
+      require.resolve(`@babel/preset-react`),
+      { development: env === 'development' },
+    ],
+    [
+      require.resolve('@babel/preset-env'),
+      {
+        modules: 'commonjs',
+        shippedProposals: true,
+        useBuiltIns: `entry`,
+      },
+    ],
   ],
   plugins: [
-    // class { handleThing = () => { } }
-    require.resolve('@babel/plugin-proposal-class-properties'),
     [require('@babel/plugin-proposal-decorators'), { legacy: true }],
+    require.resolve('@babel/plugin-proposal-class-properties'),
+    require.resolve(`@babel/plugin-proposal-optional-chaining`),
     // The following two plugins use Object.assign directly, instead of Babel's
     // extends helper. Note that this assumes `Object.assign` is available.
     // { ...todo, completed: true }
@@ -25,7 +35,6 @@ var preset = {
   ],
 };
 
-var env = process.env.BABEL_ENV || process.env.NODE_ENV;
 if (env !== 'development' && env !== 'test' && env !== 'production') {
   throw new Error(
     'Using `babel-preset-razzle` requires that you specify `NODE_ENV` or ' +
